@@ -1,0 +1,11 @@
+{
+    projects {
+      title,
+      weight,
+      description
+      task{
+        title,
+        description
+      }
+    }
+  }
