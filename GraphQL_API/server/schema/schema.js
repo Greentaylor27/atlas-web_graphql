@@ -1,5 +1,26 @@
 const { GraphQLObjectType ,GraphQLString, GraphQLInt, GraphQLSchema, GraphQLID, GraphQLList } = require('graphql');
 const lodash = require('lodash');
+const Task = require('./models/task')
+const Project = require('./models/project')
+
+const Mutation = new GraphQLObjectType({
+    name: "Mutation",
+    fields: () => ({
+        addProject: {
+            type: ProjectType,
+            args: {
+                title: { type: GraphQLString },
+                weight: { type: GraphQLInt },
+                description: { type: GraphQLString }
+            },
+            resolve: async (_, { title, weight, description }) => {
+                const newProject = new Project({
+                    
+                })
+            }
+        }
+    })
+});
 
 const ProjectType = new GraphQLObjectType({
     name: "Project",
