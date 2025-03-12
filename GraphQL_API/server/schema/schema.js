@@ -1,26 +1,40 @@
-const { GraphQLObjectType ,GraphQLString, GraphQLInt, GraphQLSchema, GraphQLID } = require('graphql');
+const { GraphQLObjectType ,GraphQLString, GraphQLInt, GraphQLSchema, GraphQLID, GraphQLList } = require('graphql');
 const lodash = require('lodash');
-
-const TaskType = new GraphQLObjectType({
-    name: "Task",
-    fields: {
-        id: { type: GraphQLID },
-        title: { type: GraphQLString },
-        weight: { type: GraphQLInt },
-        description: { type: GraphQLString }
-    }
-});
-
 
 const ProjectType = new GraphQLObjectType({
     name: "Project",
-    fields: {
+    fields: () => ({
         id: { type: GraphQLID },
         title: { type: GraphQLString },
         weight: { type: GraphQLInt },
-        description: { type: GraphQLString }
-    }
-})
+        description: { type: GraphQLString },
+        task: {
+            type: new GraphQLList(TaskType),
+            resolve(parent, args) {
+                return tasks.filter(task => task.projectID === parent.id);
+            }
+        }
+    })
+});
+
+const TaskType = new GraphQLObjectType({
+    name: "Task",
+    fields: () => ({
+        id: { type: GraphQLID },
+        title: { type: GraphQLString },
+        weight: { type: GraphQLInt },
+        projectID: { type: GraphQLString },
+        description: { type: GraphQLString },
+        project: {
+            type: ProjectType,
+            resolve(parent, args) {
+                return projects.find(project => project.id === parent.projectID)
+            }
+        }
+    })
+});
+
+
 
 const RootQuery = new GraphQLObjectType({
     name: "RootQueryType",
@@ -48,12 +62,14 @@ const tasks = [
         id: "1",
         title: "Create your first webpage",
         weight: 1,
+        projectID: "1",
         description: "Create your first HTML file 0-index.html with:\n- Add the doctype on the first line (without any comment)\n- After the doctype, open and close an HTML tag\n- Open your file in your browser (the page should be blank)"
     },
     {
         id: "2",
         title: "Structure your webpage",
         weight: 1,
+        projectID: "1",
         description: "Copy the content of 0-index.html into 1-index.html Create the head and body sections inside the html tag, create the head and body tags (empty) in this order"
     }
 ]
