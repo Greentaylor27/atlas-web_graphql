@@ -1,7 +1,7 @@
-const { GraphQLObjectType ,GraphQLString, GraphQLInt, GraphQLSchema, GraphQLID, GraphQLList } = require('graphql');
+const { GraphQLObjectType ,GraphQLString, GraphQLInt, GraphQLSchema, GraphQLID, GraphQLList, GraphQLNonNull } = require('graphql');
 const lodash = require('lodash');
-const Task = require('./models/task')
-const Project = require('./models/project')
+const Task = require('../models/task');
+const Project = require('../models/project');
 
 const Mutation = new GraphQLObjectType({
     name: "Mutation",
@@ -9,18 +9,39 @@ const Mutation = new GraphQLObjectType({
         addProject: {
             type: ProjectType,
             args: {
-                title: { type: GraphQLString },
-                weight: { type: GraphQLInt },
-                description: { type: GraphQLString }
+                title: { type: new GraphQLNonNull(GraphQLString) },
+                weight: { type: new GraphQLNonNull(GraphQLInt) },
+                description: { type: new GraphQLNonNull(GraphQLString) }
             },
-            resolve: async (_, { title, weight, description }) => {
+            resolve: (parents, args) => {
                 const newProject = new Project({
-                    
-                })
+                    title: args.title,
+                    weight: args.weight,
+                    description: args.description
+                });
+                const savedProject = newProject.save();
+                return savedProject
+            }
+        },
+        addTask: {
+            type: TaskType,
+            args: {
+                title: { type: new GraphQLNonNull(GraphQLString) },
+                weight: { type: new GraphQLNonNull(GraphQLInt) },
+                description: { type: new GraphQLNonNull(GraphQLString) }
+            },
+            resolve: (parents, args) => {
+                const newTask = new Task({
+                    title: args.title,
+                    weight: args.weight,
+                    description: args.description
+                });
+                const savedTask = newTask.save();
+                return savedTask;
             }
         }
     })
-});
+})
 
 const ProjectType = new GraphQLObjectType({
     name: "Project",
@@ -32,7 +53,7 @@ const ProjectType = new GraphQLObjectType({
         task: {
             type: new GraphQLList(TaskType),
             resolve(parent, args) {
-                return tasks.filter(task => task.projectID === parent.id);
+                return Task.find({ projectID: parent.id });
             }
         }
     })
@@ -49,7 +70,7 @@ const TaskType = new GraphQLObjectType({
         project: {
             type: ProjectType,
             resolve(parent, args) {
-                return projects.find(project => project.id === parent.projectID)
+                return projects.findById(parent.projectID)
             }
         }
     })
@@ -128,5 +149,6 @@ const projects = [
 
 
 module.exports = new GraphQLSchema({
-    query: RootQuery
+    query: RootQuery,
+    mutation: Mutation
 });
