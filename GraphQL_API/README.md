@@ -2,7 +2,7 @@
 
 A backend GraphQL API powered by Express and MongoDB. This project was built to explore how flexible and efficient GraphQL can be when designing developer-friendly APIs. It features a custom schema, root queries, resolvers, and a connection to a MongoDB database, all tested and explored using GraphiQL.
 
-![Screenshot of GraphiQL interface](GraphQL_API/screenshot/Capture.PNG)
+![Screenshot of GraphiQL interface](./screenshot/Capture.PNG)
 
 ---
 
