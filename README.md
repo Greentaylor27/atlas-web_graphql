@@ -63,3 +63,11 @@ One of the trickiest parts was figuring out how to model relationships between t
 git clone https://github.com/Greentaylor27/atlas-web_graphql.git
 cd atlas-web_graphql
 npm install
+```
+
+### 🏁 Running the Server
+
+```bash
+cd GraphQL_API
+cd server
+node app.js
